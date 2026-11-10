@@ -1,0 +1,25 @@
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: resolveai_api
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_ENV=production
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/healthz"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  mcp_tools:
+    build:
+      context: .
+      dockerfile: Dockerfile.mcp
+    container_name: resolveai_mcp_tools
+    restart: unless-stopped

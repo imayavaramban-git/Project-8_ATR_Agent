@@ -1,0 +1,63 @@
+﻿name: ResolveAI CI/CD Delivery Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test-and-eval:
+    name: Run Unit Tests & AI Agent Evaluations
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Execute Full Pytest Suite
+        run: |
+          python -m pytest tests/ -v
+
+      - name: Run AI Agent Evaluation Gate
+        run: |
+          python evals/run_evals.py
+
+  build-and-package:
+    name: Build & Verify Docker Containers
+    needs: test-and-eval
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build API & Agent Container Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile.api
+          push: false
+          tags: resolveai-api:latest
+
+      - name: Build MCP Tools Container Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile.mcp
+          push: false
+          tags: resolveai-mcp:latest

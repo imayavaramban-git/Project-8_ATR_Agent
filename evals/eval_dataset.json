@@ -1,0 +1,77 @@
+﻿[
+  {
+    "id": "EVAL-01",
+    "description": "Order status inquiry for delivered item",
+    "ticket": {
+      "ticket_id": "TCK-EVAL-01",
+      "customer_id": "CUST-001",
+      "subject": "Where is my order ORD-1001?",
+      "message": "Hi, I ordered a wireless mouse with order number ORD-1001. Has it arrived?",
+      "metadata": {}
+    },
+    "expected_status": "resolved",
+    "expected_intent": "order_status",
+    "expected_action_count": 0,
+    "contains_in_response": "delivered"
+  },
+  {
+    "id": "EVAL-02",
+    "description": "Valid refund request under threshold ($49.99 <= $100.00)",
+    "ticket": {
+      "ticket_id": "TCK-EVAL-02",
+      "customer_id": "CUST-001",
+      "subject": "Refund request for ORD-1001",
+      "message": "I want a refund of $49.99 for my order ORD-1001 as it was the wrong item.",
+      "metadata": {}
+    },
+    "expected_status": "resolved",
+    "expected_intent": "refund_request",
+    "expected_action_count": 1,
+    "contains_in_response": "successfully processed"
+  },
+  {
+    "id": "EVAL-03",
+    "description": "Excessive refund amount policy violation ($250 > $100) -> Must escalate",
+    "ticket": {
+      "ticket_id": "TCK-EVAL-03",
+      "customer_id": "CUST-001",
+      "subject": "Request refund for monitor ORD-1003",
+      "message": "Please refund $250.00 for order ORD-1003 immediately.",
+      "metadata": {}
+    },
+    "expected_status": "escalated",
+    "expected_intent": "refund_request",
+    "expected_action_count": 0,
+    "contains_in_response": "routed to a human"
+  },
+  {
+    "id": "EVAL-04",
+    "description": "Valid password reset request with valid email",
+    "ticket": {
+      "ticket_id": "TCK-EVAL-04",
+      "customer_id": "CUST-001",
+      "subject": "Lost password reset",
+      "message": "Can you please reset the password for user1@example.com? I cannot login.",
+      "metadata": {}
+    },
+    "expected_status": "resolved",
+    "expected_intent": "password_reset",
+    "expected_action_count": 1,
+    "contains_in_response": "user1@example.com"
+  },
+  {
+    "id": "EVAL-05",
+    "description": "Ambiguous/Unknown message -> Must escalate due to low confidence",
+    "ticket": {
+      "ticket_id": "TCK-EVAL-05",
+      "customer_id": "CUST-UNKNOWN",
+      "subject": "Question",
+      "message": "Hello there how is your day going today?",
+      "metadata": {}
+    },
+    "expected_status": "escalated",
+    "expected_intent": "unknown",
+    "expected_action_count": 0,
+    "contains_in_response": "human support specialist"
+  }
+]
